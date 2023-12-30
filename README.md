@@ -109,7 +109,7 @@ Kekurangan:
 2. Evaluasi performa model dengan berbagai fold untuk mendapatkan estimasi akurasi yang lebih konsisten.
 
 #### Interaksi Pengguna yang Lebih Baik
-1. TMeningkatkan antarmuka pengguna pada website untuk membuatnya lebih ramah pengguna.
+1. Meningkatkan antarmuka pengguna pada website untuk membuatnya lebih ramah pengguna.
 2. Menambahkan fitur umpan balik dan panduan untuk membantu pengguna memahami cara yang lebih baik dalam mengambil citra tangan.
 
 #### Impementasi Aplikasi Mobile
