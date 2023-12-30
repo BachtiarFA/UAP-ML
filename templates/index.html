@@ -4,38 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(
+                to right,
+                #316879,
+                #147a06,
+                #7fe7dc,
+                #ced7d8
+            );
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .content-container {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.8));
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-family: 'cursive';
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        #upload-form {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        #result-container {
+            display: none;
+            margin-top: 20px;
+        }
+        #predicted-image {
+            max-width: 300px;
+            margin-top: 10px;
+        }
+        .custom-button {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .custom-button:hover {
+            background-color: #333333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Image Classification</h1>
+    <div class="main-container">
+        <div class="content-container">
+            <h1>Image Classification</h1>
+            <form id="upload-form" enctype="multipart/form-data">
+                <label for="file-input" class="custom-button">Choose File</label>
+                <input type="file" id="file-input" name="file" accept=".jpg, .jpeg, .png" style="display: none;">
+                <button type="button" class="custom-button" onclick="predictImage()">Predict</button>
+            </form>
 
-    <!-- Klik predict -->
-    <form action="/predict" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".jpg, .jpeg, .png" onchange="previewImage(event)">
-        <button type="submit">Predict</button>
-    </form>
-
-    <!-- tampil image -->
-    <div>
-        <h2>Selected Image:</h2>
-        <img id="selected-image" src="" alt="Selected Image" style="max-width: 300px; margin-top: 10px;">
+            <div id="result-container">
+                <h2>Result:</h2>
+                <p>Predicted Label: <span id="predicted-label"></span></p>
+                <p>Accuracy: <span id="accuracy"></span>%</p>
+                <p>Prediction Time: <span id="prediction-time"></span> seconds</p>
+                <img id="predicted-image" alt="Predicted Image" style="display: block; margin: 0 auto;">
+            </div>
+        </div>
     </div>
 
-    <!-- select image -->
     <script>
-        function previewImage(event) {
-            var input = event.target;
-            var imageContainer = document.getElementById('selected-image');
-            var image = input.files[0];
+        function predictImage() {
+            var fileInput = document.querySelector('input[type="file"]');
+            var formData = new FormData();
+            formData.append('file', fileInput.files[0]);
 
-            if (image) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    imageContainer.src = e.target.result;
-                }
-                reader.readAsDataURL(image);
-            } else {
-                imageContainer.src = "";
-            }
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('predicted-label').innerText = data.actual_label;
+                document.getElementById('accuracy').innerText = data.accuracy.toFixed(2);
+                document.getElementById('prediction-time').innerText = data.prediction_time;
+
+                var img = document.getElementById('predicted-image');
+                img.src = URL.createObjectURL(fileInput.files[0]);
+                img.style.display = 'block';
+
+                document.getElementById('result-container').style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
